@@ -240,7 +240,7 @@
 
 <!-- Start Onboarding confirmation / API trigger result modal -->
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modalDialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-icon" id="modalIcon">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
@@ -248,8 +248,11 @@
     <div id="modalBody">
       <p>Please wait…</p>
     </div>
+    <div id="modalEmbedWrap" style="display:none;">
+      <iframe id="modalEmbedFrame" class="modal-embed-frame" title="Onboarding application"></iframe>
+      <p style="margin-top:8px;font-size:12.5px;"><a id="modalEmbedFallbackLink" href="#" target="_blank" rel="noopener noreferrer">Open in a new tab ↗</a></p>
+    </div>
     <div class="modal-actions" id="modalActions">
-      <a class="btn btn-primary" id="modalPrimaryAction" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">Continue to your application →</a>
       <button class="btn btn-outline" id="modalRetryAction" type="button" style="display:none;">Try again</button>
       <button class="btn-text" id="modalClose" type="button">Close</button>
     </div>

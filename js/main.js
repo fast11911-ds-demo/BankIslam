@@ -45,12 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
   */
   const startBtn = document.getElementById('startOnboardBtn');
   const modalOverlay = document.getElementById('modalOverlay');
+  const modalDialog = document.getElementById('modalDialog');
   const modalClose = document.getElementById('modalClose');
   const modalIcon = document.getElementById('modalIcon');
   const modalTitle = document.getElementById('modalTitle');
   const modalBody = document.getElementById('modalBody');
-  const modalPrimaryAction = document.getElementById('modalPrimaryAction');
   const modalRetryAction = document.getElementById('modalRetryAction');
+  const modalEmbedWrap = document.getElementById('modalEmbedWrap');
+  const modalEmbedFrame = document.getElementById('modalEmbedFrame');
+  const modalEmbedFallbackLink = document.getElementById('modalEmbedFallbackLink');
 
   const ICON_CHECK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const ICON_LOADING = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2.4" stroke-dasharray="30 12" stroke-linecap="round"/></svg>';
@@ -62,36 +65,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   if (modalClose && modalOverlay) {
-    modalClose.addEventListener('click', () => modalOverlay.classList.remove('open'));
+    modalClose.addEventListener('click', () => closeModal());
     modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) modalOverlay.classList.remove('open');
+      if (e.target === modalOverlay) closeModal();
     });
   }
   if (modalRetryAction) {
     modalRetryAction.addEventListener('click', () => triggerOnboardingWorkflow());
   }
 
+  function closeModal() {
+    if (modalOverlay) modalOverlay.classList.remove('open');
+    resetModalEmbed();
+  }
+
+  function resetModalEmbed() {
+    if (modalDialog) modalDialog.classList.remove('modal-embed');
+    if (modalEmbedWrap) modalEmbedWrap.style.display = 'none';
+    if (modalEmbedFrame) modalEmbedFrame.src = '';
+  }
+
   function showModalLoading() {
+    resetModalEmbed();
     if (modalIcon) modalIcon.innerHTML = ICON_LOADING;
     if (modalTitle) modalTitle.textContent = 'Starting your application…';
     if (modalBody) modalBody.innerHTML = '<p>Please wait while we start your onboarding workflow.</p>';
-    if (modalPrimaryAction) modalPrimaryAction.style.display = 'none';
     if (modalRetryAction) modalRetryAction.style.display = 'none';
     if (modalOverlay) modalOverlay.classList.add('open');
   }
 
   function showModalSuccess(data) {
     if (modalIcon) modalIcon.innerHTML = ICON_CHECK;
-    if (modalTitle) modalTitle.textContent = 'Onboarding started';
-    if (modalBody) modalBody.innerHTML = '<p>Your onboarding workflow instance has been started successfully.</p>';
+    if (modalTitle) modalTitle.textContent = 'Your application is ready';
+    if (modalBody) modalBody.innerHTML = '<p>Continue below to complete your onboarding.</p>';
     if (modalRetryAction) modalRetryAction.style.display = 'none';
-    if (modalPrimaryAction) {
-      if (data && data.workflow_instance_url) {
-        modalPrimaryAction.href = data.workflow_instance_url;
-        modalPrimaryAction.style.display = '';
-      } else {
-        modalPrimaryAction.style.display = 'none';
-      }
+
+    if (data && data.workflow_instance_url) {
+      if (modalDialog) modalDialog.classList.add('modal-embed');
+      if (modalEmbedFrame) modalEmbedFrame.src = data.workflow_instance_url;
+      if (modalEmbedFallbackLink) modalEmbedFallbackLink.href = data.workflow_instance_url;
+      if (modalEmbedWrap) modalEmbedWrap.style.display = '';
     }
   }
 
@@ -99,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalIcon) modalIcon.innerHTML = ICON_ERROR;
     if (modalTitle) modalTitle.textContent = 'Something went wrong';
     if (modalBody) modalBody.innerHTML = `<p>${message || 'We could not start your onboarding workflow. Please try again.'}</p>`;
-    if (modalPrimaryAction) modalPrimaryAction.style.display = 'none';
     if (modalRetryAction) modalRetryAction.style.display = '';
   }
 
