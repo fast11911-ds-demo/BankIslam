@@ -94,19 +94,32 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalOverlay) modalOverlay.classList.add('open');
   }
 
-  function showModalSuccess(data) {
-    if (modalIcon) modalIcon.innerHTML = ICON_CHECK;
-    if (modalTitle) modalTitle.textContent = 'Your application is ready';
-    if (modalBody) modalBody.innerHTML = '<p>Continue below to complete your onboarding.</p>';
-    if (modalRetryAction) modalRetryAction.style.display = 'none';
+function showModalSuccess(data) {
+  if (modalIcon) modalIcon.innerHTML = ICON_CHECK;
+  if (modalTitle) modalTitle.textContent = 'Your application is ready';
+  if (modalBody) modalBody.innerHTML = '<p>Continue below to complete your onboarding.</p>';
+  if (modalRetryAction) modalRetryAction.style.display = 'none';
 
-    if (data && data.workflow_instance_url) {
-      if (modalDialog) modalDialog.classList.add('modal-embed');
-      if (modalEmbedFrame) modalEmbedFrame.src = data.workflow_instance_url;
-      if (modalEmbedFallbackLink) modalEmbedFallbackLink.href = data.workflow_instance_url;
-      if (modalEmbedWrap) modalEmbedWrap.style.display = '';
+  // Docusign's docs are inconsistent about casing for this field across
+  // endpoints, so check the common variants defensively.
+  const instanceUrl =
+    (data && (data.workflow_instance_url || data.workflowInstanceUrl || data.instance_url || data.url)) || null;
+
+  if (instanceUrl) {
+    if (modalDialog) modalDialog.classList.add('modal-embed');
+    if (modalEmbedFrame) modalEmbedFrame.src = instanceUrl;
+    if (modalEmbedFallbackLink) modalEmbedFallbackLink.href = instanceUrl;
+    if (modalEmbedWrap) modalEmbedWrap.style.display = '';
+  } else {
+    // No usable URL in the response — surface that clearly instead of
+    // silently showing an empty success modal.
+    if (modalBody) {
+      modalBody.innerHTML =
+        '<p>The workflow started, but no application link was returned. Check the API response shape.</p>';
     }
+    console.warn('[start-onboarding] Unexpected response shape, no instance URL found:', data);
   }
+}
 
   function showModalError(message) {
     if (modalIcon) modalIcon.innerHTML = ICON_ERROR;
