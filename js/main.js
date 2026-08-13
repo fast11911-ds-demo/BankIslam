@@ -63,21 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function triggerOnboardingWorkflow() {
-    // --- DEMO STUB ---
-    // Swap this console.log for a real fetch to your backend endpoint, e.g.:
-    //
-    // fetch('/api/onboarding/start', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ product: 'Retail Banking Onboarding', channel: 'web-mockup-demo' })
-    // })
-    //   .then(res => res.json())
-    //   .then(data => console.log('Workflow instance started:', data))
-    //   .catch(err => console.error('Failed to start onboarding workflow:', err));
-    //
-    // Your backend then calls Docusign Workflow Builder's trigger-workflow
-    // API (POST /v1/workflows/{workflowId}/trigger) using a server-held
-    // access token — see js/main.js comment block and README.md.
-    console.log('[demo] Start Onboarding clicked — would trigger Docusign Workflow Builder workflow here.');
+    fetch('/api/start-onboarding', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product: 'Retail Banking Onboarding', channel: 'web-mockup-demo' })
+    })
+      .then(res => res.json())
+      .then(data => console.log('Workflow instance started:', data))
+      .catch(err => console.error('Failed to start onboarding workflow:', err));
   }
 });

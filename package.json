@@ -1,0 +1,9 @@
+{
+  "name": "bank-islam-onboarding-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bank Islam retail onboarding demo (static mockup + Vercel serverless API)",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
