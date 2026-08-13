@@ -412,15 +412,16 @@ footer{ background:var(--bi-charcoal); color:#cfcecb; padding:56px 0 26px; font-
   .cta-band{ flex-direction:column; align-items:flex-start; }
 }
 /* Modal — embedded workflow instance */
-.modal.modal-embed {
-  max-width: 920px;
-  width: 92vw;
+.modal.modal-embed{
+  max-width:1120px; width:95vw;
+  max-height:92vh; overflow-y:auto;
 }
-.modal-embed-frame {
-  width: 100%;
-  height: 640px;
-  border: 1px solid var(--bi-gray-200);
-  border-radius: var(--radius-md);
-  margin-top: 14px;
-  display: block;
+.modal-embed-frame{
+  width:100%; height:78vh; min-height:520px; max-height:820px;
+  border:1px solid var(--bi-gray-200); border-radius:var(--radius-md);
+  margin-top:14px; display:block;
+}
+@media (max-width: 640px){
+  .modal.modal-embed{ padding:18px; max-height:96vh; }
+  .modal-embed-frame{ height:70vh; min-height:420px; }
 }
