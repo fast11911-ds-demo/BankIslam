@@ -16,6 +16,9 @@
 const jwt = require('jsonwebtoken');
 
 async function getAccessToken() {
+  console.log('[debug] DOCUSIGN_PRIVATE_KEY exists:', !!process.env.DOCUSIGN_PRIVATE_KEY,
+    'length:', (process.env.DOCUSIGN_PRIVATE_KEY || '').length,
+    'starts with:', (process.env.DOCUSIGN_PRIVATE_KEY || '').slice(0, 30));
   const assertion = jwt.sign(
     {
       scope: 'signature impersonation',
