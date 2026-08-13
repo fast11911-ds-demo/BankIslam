@@ -39,20 +39,26 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ---- Start Onboarding CTA ----
-     This is the button referenced in the onboarding brief. In production,
-     replace triggerOnboardingWorkflow() below with a call to your backend,
-     which in turn calls the Docusign Workflow Builder "trigger workflow"
-     endpoint (workflow ID + applicant payload). Never call Docusign's API
-     directly from client-side JS — the access token must stay server-side.
+     Calls the backend at /api/start-onboarding, which in turn calls the
+     Docusign Workflow Builder "trigger workflow" endpoint server-side.
+     The modal reflects the live result of that call (loading/success/error).
   */
   const startBtn = document.getElementById('startOnboardBtn');
   const modalOverlay = document.getElementById('modalOverlay');
   const modalClose = document.getElementById('modalClose');
+  const modalIcon = document.getElementById('modalIcon');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const modalPrimaryAction = document.getElementById('modalPrimaryAction');
+  const modalRetryAction = document.getElementById('modalRetryAction');
+
+  const ICON_CHECK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_LOADING = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2.4" stroke-dasharray="30 12" stroke-linecap="round"/></svg>';
+  const ICON_ERROR = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 8v5M12 16.5h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.4"/></svg>';
 
   if (startBtn && modalOverlay) {
     startBtn.addEventListener('click', () => {
       triggerOnboardingWorkflow();
-      modalOverlay.classList.add('open');
     });
   }
   if (modalClose && modalOverlay) {
@@ -61,15 +67,58 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.target === modalOverlay) modalOverlay.classList.remove('open');
     });
   }
+  if (modalRetryAction) {
+    modalRetryAction.addEventListener('click', () => triggerOnboardingWorkflow());
+  }
+
+  function showModalLoading() {
+    if (modalIcon) modalIcon.innerHTML = ICON_LOADING;
+    if (modalTitle) modalTitle.textContent = 'Starting your application…';
+    if (modalBody) modalBody.innerHTML = '<p>Please wait while we start your onboarding workflow.</p>';
+    if (modalPrimaryAction) modalPrimaryAction.style.display = 'none';
+    if (modalRetryAction) modalRetryAction.style.display = 'none';
+    if (modalOverlay) modalOverlay.classList.add('open');
+  }
+
+  function showModalSuccess(data) {
+    if (modalIcon) modalIcon.innerHTML = ICON_CHECK;
+    if (modalTitle) modalTitle.textContent = 'Onboarding started';
+    if (modalBody) modalBody.innerHTML = '<p>Your onboarding workflow instance has been started successfully.</p>';
+    if (modalRetryAction) modalRetryAction.style.display = 'none';
+    if (modalPrimaryAction) {
+      if (data && data.workflow_instance_url) {
+        modalPrimaryAction.href = data.workflow_instance_url;
+        modalPrimaryAction.style.display = '';
+      } else {
+        modalPrimaryAction.style.display = 'none';
+      }
+    }
+  }
+
+  function showModalError(message) {
+    if (modalIcon) modalIcon.innerHTML = ICON_ERROR;
+    if (modalTitle) modalTitle.textContent = 'Something went wrong';
+    if (modalBody) modalBody.innerHTML = `<p>${message || 'We could not start your onboarding workflow. Please try again.'}</p>`;
+    if (modalPrimaryAction) modalPrimaryAction.style.display = 'none';
+    if (modalRetryAction) modalRetryAction.style.display = '';
+  }
 
   function triggerOnboardingWorkflow() {
+    showModalLoading();
+
     fetch('/api/start-onboarding', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product: 'Retail Banking Onboarding', channel: 'web-mockup-demo' })
+      body: JSON.stringify({ name: 'Web applicant' }),
     })
-      .then(res => res.json())
-      .then(data => console.log('Workflow instance started:', data))
-      .catch(err => console.error('Failed to start onboarding workflow:', err));
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || 'Unknown error');
+        showModalSuccess(data);
+      })
+      .catch((err) => {
+        console.error('Failed to start onboarding workflow:', err);
+        showModalError(err.message);
+      });
   }
 });

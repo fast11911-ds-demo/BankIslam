@@ -98,8 +98,6 @@ module.exports = async (req, res) => {
     res.status(200).json(result);
   } catch (err) {
     console.error('Failed to start onboarding workflow:', err);
-    // Temporarily return the real error while debugging — revert to a
-    // generic message before sharing this demo externally.
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Internal error starting onboarding workflow' });
   }
 };

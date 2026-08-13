@@ -238,28 +238,20 @@
   </div>
 </footer>
 
-<!-- Start Onboarding confirmation / API trigger preview modal -->
+<!-- Start Onboarding confirmation / API trigger result modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-icon">
+    <div class="modal-icon" id="modalIcon">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
     <h3 id="modalTitle">Onboarding workflow triggered</h3>
-    <p>In production, this button calls the Docusign Workflow Builder API to launch the retail onboarding workflow for this applicant. Example request:</p>
-    <div class="modal-code" id="modalCode">POST /v1/workflows/{workflowId}/trigger
-Authorization: Bearer &lt;access_token&gt;
-Content-Type: application/json
-
-{
-  "applicant": {
-    "product": "Retail Banking Onboarding",
-    "channel": "web-mockup-demo"
-  },
-  "triggerSource": "bank-islam-onboarding-site"
-}</div>
-    <p style="font-size:12.5px;color:var(--bi-gray-500);">This is a static demo — no real workflow has been started.</p>
-    <div class="modal-actions">
-      <button class="btn-text" id="modalClose">Close</button>
+    <div id="modalBody">
+      <p>Please wait…</p>
+    </div>
+    <div class="modal-actions" id="modalActions">
+      <a class="btn btn-primary" id="modalPrimaryAction" href="#" target="_blank" rel="noopener noreferrer" style="display:none;">Continue to your application →</a>
+      <button class="btn btn-outline" id="modalRetryAction" type="button" style="display:none;">Try again</button>
+      <button class="btn-text" id="modalClose" type="button">Close</button>
     </div>
   </div>
 </div>
